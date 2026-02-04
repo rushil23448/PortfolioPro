@@ -1,0 +1,11 @@
+package com.example.portfolio_management_system.repository;
+
+import com.example.portfolio_management_system.model.Holding;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface HoldingRepository extends JpaRepository<Holding, Long> {
+
+    List<Holding> findByHolderId(Long holderId);
+}
