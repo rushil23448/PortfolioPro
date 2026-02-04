@@ -1,11 +1,12 @@
 package com.example.portfolio_management_system.controller;
 
+import com.example.portfolio_management_system.dto.PortfolioAnalyticsResponse;
 import com.example.portfolio_management_system.model.Holder;
 import com.example.portfolio_management_system.model.Holding;
-import com.example.portfolio_management_system.model.Stock;
 import com.example.portfolio_management_system.repository.HolderRepository;
 import com.example.portfolio_management_system.repository.HoldingRepository;
 import com.example.portfolio_management_system.repository.StockRepository;
+import com.example.portfolio_management_system.service.PortfolioAnalyticsService;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,17 @@ public class PortfolioController {
     private final HoldingRepository holdingRepository;
     private final StockRepository stockRepository;
 
+    private final PortfolioAnalyticsService analyticsService;
+
     public PortfolioController(HolderRepository holderRepository,
                                HoldingRepository holdingRepository,
-                               StockRepository stockRepository) {
+                               StockRepository stockRepository,
+                               PortfolioAnalyticsService analyticsService) {
+
         this.holderRepository = holderRepository;
         this.holdingRepository = holdingRepository;
         this.stockRepository = stockRepository;
+        this.analyticsService = analyticsService;
     }
 
     // ✅ API 1: Get all holders
@@ -40,6 +46,9 @@ public class PortfolioController {
         return holdingRepository.findByHolderId(holderId);
     }
 
-
-
+    // ✅ API 3: Portfolio Analytics
+    @GetMapping("/{holderId}/analytics")
+    public PortfolioAnalyticsResponse analytics(@PathVariable Long holderId) {
+        return analyticsService.getAnalytics(holderId);
+    }
 }
