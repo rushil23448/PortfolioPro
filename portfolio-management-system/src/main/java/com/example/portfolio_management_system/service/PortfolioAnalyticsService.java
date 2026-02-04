@@ -4,6 +4,7 @@ import com.example.portfolio_management_system.dto.PortfolioAnalyticsResponse;
 import com.example.portfolio_management_system.model.Holding;
 import com.example.portfolio_management_system.model.Stock;
 import com.example.portfolio_management_system.repository.HoldingRepository;
+import com.example.portfolio_management_system.repository.HolderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -12,63 +13,98 @@ import java.util.*;
 public class PortfolioAnalyticsService {
 
     private final HoldingRepository holdingRepository;
+    private final HolderRepository holderRepository;
 
-    public PortfolioAnalyticsService(HoldingRepository holdingRepository) {
+    public PortfolioAnalyticsService(HoldingRepository holdingRepository,
+                                     HolderRepository holderRepository) {
         this.holdingRepository = holdingRepository;
+        this.holderRepository = holderRepository;
     }
 
     public PortfolioAnalyticsResponse getAnalytics(Long holderId) {
 
+        // ✅ Holder Name
+        String holderName = holderRepository.findById(holderId)
+                .orElseThrow()
+                .getName();
+
         List<Holding> holdings = holdingRepository.findByHolderId(holderId);
 
-        double invested = 0;
-        double current = 0;
+        double totalInvested = 0;
+        double currentValue = 0;
 
-        Map<String, Double> sectorMap = new HashMap<>();
+        // Sector Values Map
+        Map<String, Double> sectorValues = new HashMap<>();
 
+        // -----------------------------
+        // ✅ Loop Holdings
+        // -----------------------------
         for (Holding h : holdings) {
 
             Stock stock = h.getStock();
 
-            double buyValue = h.getAvgPrice() * h.getQuantity();
-            double currentValue = stock.getBasePrice() * h.getQuantity();
+            double invested = h.getAvgPrice() * h.getQuantity();
+            double current = stock.getCurrentPrice() * h.getQuantity();
 
-            invested += buyValue;
-            current += currentValue;
+            totalInvested += invested;
+            currentValue += current;
 
-            sectorMap.put(
+            // Sector Allocation Value
+            sectorValues.put(
                     stock.getSector(),
-                    sectorMap.getOrDefault(stock.getSector(), 0.0) + currentValue
+                    sectorValues.getOrDefault(stock.getSector(), 0.0) + current
             );
         }
 
-        double profitLoss = current - invested;
+        // -----------------------------
+        // ✅ Profit/Loss
+        // -----------------------------
+        double profitLoss = currentValue - totalInvested;
 
-        // Convert sector values into percentages
-        Map<String, Double> allocationPercent = new HashMap<>();
-        for (String sector : sectorMap.keySet()) {
-            allocationPercent.put(sector,
-                    (sectorMap.get(sector) / current) * 100
-            );
+        // -----------------------------
+        // ✅ Sector Allocation %
+        // -----------------------------
+        Map<String, Double> sectorAllocation = new HashMap<>();
+
+        for (String sector : sectorValues.keySet()) {
+
+            double percent = (sectorValues.get(sector) / currentValue) * 100;
+
+            sectorAllocation.put(sector, Math.round(percent * 100.0) / 100.0);
         }
 
-        // Diversification Score
-        int diversificationScore = 100 - (allocationPercent.size() * 10);
+        // -----------------------------
+        // ✅ Diversification Score
+        // -----------------------------
+        int sectorCount = sectorAllocation.size();
 
-        // Risk Score (simple avg volatility)
-        int riskScore = holdings.stream()
-                .map(h -> h.getStock().getVolatility())
-                .mapToInt(v -> (int) (v * 100))
-                .sum() / holdings.size();
+        int diversificationScore = Math.min(100, sectorCount * 20);
+        // Example:
+        // 1 sector → 20
+        // 5 sectors → 100
 
+        // -----------------------------
+        // ✅ Risk Score
+        // -----------------------------
+        double riskSum = 0;
+
+        for (Holding h : holdings) {
+            riskSum += h.getStock().getVolatility() * 100;
+        }
+
+        int riskScore = (int) Math.min(100, riskSum / holdings.size());
+
+        // -----------------------------
+        // ✅ Return DTO
+        // -----------------------------
         return PortfolioAnalyticsResponse.builder()
-                .holderName(holdings.get(0).getHolder().getName())
-                .totalInvested(invested)
-                .currentValue(current)
+                .holderName(holderName)
+                .totalInvested(totalInvested)
+                .currentValue(currentValue)
                 .profitLoss(profitLoss)
                 .diversificationScore(diversificationScore)
                 .riskScore(riskScore)
-                .sectorAllocation(allocationPercent)
+                .sectorAllocation(sectorAllocation)
                 .build();
     }
 }
