@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/stocks")
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 public class StockController {
 
     private final StockRepository stockRepository;
@@ -17,7 +17,7 @@ public class StockController {
         this.stockRepository = stockRepository;
     }
 
-    // ✅ Get all stocks
+    // ✅ API: Get all stocks with live prices
     @GetMapping
     public List<Stock> getAllStocks() {
         return stockRepository.findAll();

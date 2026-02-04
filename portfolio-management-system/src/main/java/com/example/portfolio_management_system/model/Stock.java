@@ -22,6 +22,8 @@ public class Stock {
 
     private Double basePrice;
     private Double volatility;
-
     private Integer confidenceScore;
+
+    // ✅ NEW FIELD: Current Market Price
+    private Double currentPrice;
 }
