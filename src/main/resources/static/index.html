@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Manager | BSE & NSE</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">📈</span>
+            <span class="logo-text">Portfolio Manager</span>
+        </div>
+        <div class="search-container">
+            <input type="text" id="stockSearch" placeholder="Search stocks..." class="search-input">
+            <div id="searchResults" class="search-results"></div>
+        </div>
+        <nav class="nav">
+            <a href="#dashboard" class="nav-link active">Dashboard</a>
+            <a href="#portfolio" class="nav-link">Portfolio</a>
+            <a href="#market" class="nav-link">Market</a>
+            <a href="#sectors" class="nav-link">Sectors</a>
+            <a href="#heatmap" class="nav-link">Heat Map</a>
+            <a href="#insights" class="nav-link">AI Insights</a>
+            <a href="#watchlist" class="nav-link">Watchlist</a>
+        </nav>
+    </header>
+
+    <main class="main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <h1 class="section-title">Dashboard</h1>
+            <div class="cards-row">
+                <div class="card stat-card">
+                    <span class="card-label">Total Stocks</span>
+                    <span class="card-value" id="totalStocks">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Buy Recommendations</span>
+                    <span class="card-value green" id="buyCount">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Sell Signals</span>
+                    <span class="card-value red" id="sellCount">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Diversification Score</span>
+                    <span class="card-value" id="divScore">—</span>
+                </div>
+            </div>
+            
+            <!-- Market Overview Cards -->
+            <h2 class="section-subtitle">Market Overview</h2>
+            <div class="movers-grid">
+                <div class="card movers-card">
+                    <h3>🚀 Top Gainers</h3>
+                    <ul class="movers-list" id="topGainersList">
+                        <li class="movers-placeholder">Loading...</li>
+                    </ul>
+                </div>
+                <div class="card movers-card">
+                    <h3>📉 Top Losers</h3>
+                    <ul class="movers-list" id="topLosersList">
+                        <li class="movers-placeholder">Loading...</li>
+                    </ul>
+                </div>
+                <div class="card movers-card">
+                    <h3>💹 Most Active</h3>
+                    <ul class="movers-list" id="mostActiveList">
+                        <li class="movers-placeholder">Loading...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="charts-row">
+                <div class="card chart-card">
+                    <h3>Recommendations by Action</h3>
+                    <canvas id="chartRecommendations"></canvas>
+                </div>
+                <div class="card chart-card">
+                    <h3>Stocks by Exchange</h3>
+                    <canvas id="chartExchange"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="section">
+            <h1 class="section-title">Portfolio Performance</h1>
+            <div class="portfolio-summary">
+                <div class="card stat-card large">
+                    <span class="card-label">Portfolio Value</span>
+                    <span class="card-value" id="portfolioValue">₹—</span>
+                </div>
+                <div class="card stat-card large">
+                    <span class="card-label">Total Gain/Loss</span>
+                    <span class="card-value" id="portfolioGain">—</span>
+                </div>
+                <div class="card stat-card large">
+                    <span class="card-label">Today's Change</span>
+                    <span class="card-value" id="portfolioDayChange">—</span>
+                </div>
+            </div>
+            <div class="card chart-card full-width">
+                <h3>Portfolio Performance (30 Days)</h3>
+                <canvas id="chartPortfolioHistory"></canvas>
+            </div>
+            <div class="card">
+                <h3>Holdings Performance</h3>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Exchange</th>
+                                <th>Current Value</th>
+                                <th>Cost Basis</th>
+                                <th>Gain/Loss</th>
+                                <th>Gain %</th>
+                                <th>Day Change</th>
+                                <th>Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdingsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Market Section -->
+        <section id="market" class="section">
+            <h1 class="section-title">Market Data</h1>
+            <div class="market-summary-bar">
+                <div class="market-stat">
+                    <span class="label">Total Stocks:</span>
+                    <span id="marketTotalStocks">—</span>
+                </div>
+                <div class="market-stat">
+                    <span class="label">Advancing:</span>
+                    <span class="green" id="marketAdvancing">—</span>
+                </div>
+                <div class="market-stat">
+                    <span class="label">Declining:</span>
+                    <span class="red" id="marketDeclining">—</span>
+                </div>
+                <div class="market-stat">
+                    <span class="label">Market Sentiment:</span>
+                    <span id="marketSentiment">—</span>
+                </div>
+            </div>
+            <div class="tabs-inline">
+                <button class="tab-btn active" data-market="gainers">Top Gainers</button>
+                <button class="tab-btn" data-market="losers">Top Losers</button>
+                <button class="tab-btn" data-market="active">Most Active</button>
+            </div>
+            <div class="card table-card">
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Exchange</th>
+                                <th>Price</th>
+                                <th>Change %</th>
+                                <th>Volume</th>
+                                <th>PE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marketTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sectors Section -->
+        <section id="sectors" class="section">
+            <h1 class="section-title">Sector Performance</h1>
+            <div class="market-summary-bar">
+                <div class="market-stat">
+                    <span class="label">Market Trend:</span>
+                    <span id="sectorMarketTrend">—</span>
+                </div>
+                <div class="market-stat">
+                    <span class="label">Overall Sentiment:</span>
+                    <span id="sectorOverallSentiment">—</span>
+                </div>
+            </div>
+            <div class="charts-row">
+                <div class="card chart-card">
+                    <h3>Sector Performance (Day Change %)</h3>
+                    <canvas id="chartSectorPerformance"></canvas>
+                </div>
+                <div class="card chart-card">
+                    <h3>Sector Allocation</h3>
+                    <canvas id="chartSectorAllocation"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Detailed Sector Analysis</h3>
+                <div class="sector-grid" id="sectorDetails"></div>
+            </div>
+        </section>
+
+        <!-- Heat Map Section -->
+        <section id="heatmap" class="section">
+            <h1 class="section-title">Dumb Money Heat Map</h1>
+            <div class="info-banner">
+                <strong>What is Dumb Money?</strong> It's emotional money — people buying because a stock is trending or due to FOMO.
+                <br><br>
+                <strong>Powered by AI:</strong> News sentiment analyzed to detect hype and FOMO in real-time.
+            </div>
+            
+            <div class="cards-row" id="heatSummaryStats">
+                <div class="card stat-card">
+                    <span class="card-label">Overheated</span>
+                    <span class="card-value red" id="overheatedCount">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Warm</span>
+                    <span class="card-value" id="warmCount">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Neutral</span>
+                    <span class="card-value" id="neutralCount">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Cool</span>
+                    <span class="card-value green" id="coolCount">—</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="card-label">Avg Heat Score</span>
+                    <span class="card-value" id="avgHeatScore">—</span>
+                </div>
+            </div>
+            
+            <div class="filter-bar">
+                <button type="button" class="btn-refresh" id="refreshHeatBtn">🔄 Refresh Real-Time Data</button>
+                <select id="heatLevelFilter">
+                    <option value="">All Levels</option>
+                    <option value="OVERHEATED">Overheated Only</option>
+                    <option value="WARM">Warm Only</option>
+                    <option value="NEUTRAL">Neutral Only</option>
+                    <option value="COOL">Cool Only</option>
+                </select>
+                <span class="refresh-msg" id="heatRefreshMsg"></span>
+            </div>
+            
+            <div class="heat-legend">
+                <span>Cool (low risk)</span>
+                <div class="legend-gradient"></div>
+                <span>Overheated (high risk)</span>
+            </div>
+            
+            <div class="heat-map" id="dumbMoneyHeatMap"></div>
+            
+            <div class="card table-card" style="margin-top: 1.5rem;">
+                <h3 style="padding: 1rem 1rem 0.5rem;">Detailed Analysis</h3>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                                <th>Volume</th>
+                                <th>Heat Score</th>
+                                <th>Level</th>
+                                <th>AI Sentiment</th>
+                                <th>Trend</th>
+                                <th>AI Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody id="heatMapTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Insights Section -->
+        <section id="insights" class="section">
+            <h1 class="section-title">AI Market Insights</h1>
+            <div class="ai-summary-card card">
+                <h2 id="aiInsightTitle">Market Intelligence Report</h2>
+                <p class="ai-summary-text" id="aiSummaryText">Loading market insights...</p>
+                <p class="ai-detailed-text" id="aiDetailedText"></p>
+            </div>
+            
+            <div class="insights-grid">
+                <div class="card insight-card">
+                    <h3>📊 Market Outlook</h3>
+                    <div class="outlook-grid" id="marketOutlook">
+                        <div class="outlook-item">
+                            <span class="label">Overall</span>
+                            <span class="value" id="outlookOverall">—</span>
+                        </div>
+                        <div class="outlook-item">
+                            <span class="label">Short Term</span>
+                            <span class="value" id="outlookShort">—</span>
+                        </div>
+                        <div class="outlook-item">
+                            <span class="label">Medium Term</span>
+                            <span class="value" id="outlookMedium">—</span>
+                        </div>
+                        <div class="outlook-item">
+                            <span class="label">Long Term</span>
+                            <span class="value" id="outlookLong">—</span>
+                        </div>
+                        <div class="outlook-item full">
+                            <span class="label">Confidence</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="outlookConfidence"></div>
+                            </div>
+                            <span id="outlookConfidenceText">—</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card insight-card">
+                    <h3>🔥 Trending Stock</h3>
+                    <div class="trending-stock" id="trendingStock">
+                        <div class="trending-symbol">—</div>
+                        <div class="trending-name">—</div>
+                        <div class="trending-reason">—</div>
+                        <div class="trending-score">AI Score: —</div>
+                    </div>
+                </div>
+                
+                <div class="card insight-card warning">
+                    <h3>⚠️ Risk Alert</h3>
+                    <div class="risk-alert" id="riskAlert">
+                        <div class="risk-type">—</div>
+                        <div class="risk-desc">—</div>
+                        <div class="risk-level">
+                            <span>Risk Level:</span>
+                            <div class="risk-bar">
+                                <div class="risk-fill" id="riskFill"></div>
+                            </div>
+                            <span id="riskLevelText">—</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card insight-card opportunity">
+                    <h3>💡 Opportunity</h3>
+                    <div class="opportunity-info" id="opportunity">
+                        <div class="opp-type">—</div>
+                        <div class="opp-desc">—</div>
+                        <div class="opp-symbols">—</div>
+                        <div class="opp-return">Potential: —</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Key Market Factors</h3>
+                <ul class="factors-list" id="keyFactorsList">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Watchlist Section -->
+        <section id="watchlist" class="section">
+            <h1 class="section-title">My Watchlist</h1>
+            <div class="watchlist-header">
+                <button class="btn-refresh" id="addToWatchlistBtn">+ Add Stock</button>
+                <span class="watchlist-count" id="watchlistCount">0 stocks</span>
+            </div>
+            <div class="card table-card">
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Exchange</th>
+                                <th>Price</th>
+                                <th>Change %</th>
+                                <th>Heat Score</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="watchlistTableBody">
+                            <tr>
+                                <td colspan="7" class="empty-message">Your watchlist is empty.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card alerts-card">
+                <h3>🔔 Price Alerts</h3>
+                <div class="alerts-list" id="alertsList">
+                    <div class="empty-message">No active alerts.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stocks Section -->
+        <section id="stocks" class="section">
+            <h1 class="section-title">BSE & NSE Stocks</h1>
+            <div class="filter-bar stocks-toolbar">
+                <select id="exchangeFilter">
+                    <option value="">All Exchanges</option>
+                    <option value="NSE">NSE</option>
+                    <option value="BSE">BSE</option>
+                </select>
+                <button type="button" class="btn-refresh" id="refreshPricesBtn">Refresh prices</button>
+                <span class="refresh-msg" id="refreshMessage"></span>
+            </div>
+            <div class="card table-card">
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Sector</th>
+                                <th>Exchange</th>
+                                <th>Price</th>
+                                <th>Change %</th>
+                                <th>PE</th>
+                                <th>Heat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stocksTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section id="recommendations" class="section">
+            <h1 class="section-title">Stock Recommendations</h1>
+            <p class="section-desc">Buy / Sell / Hold signals based on momentum, valuation & dumb money flow.</p>
+            <div class="tabs-inline">
+                <button class="tab-btn active" data-rec="all">All</button>
+                <button class="tab-btn" data-rec="buy">Buy</button>
+                <button class="tab-btn" data-rec="sell">Sell</button>
+            </div>
+            <div class="cards-grid" id="recommendationsGrid"></div>
+        </section>
+
+        <!-- Diversification Section -->
+        <section id="diversification" class="section">
+            <h1 class="section-title">Portfolio Diversification</h1>
+            <p class="section-desc">Spread risk across sectors and exchanges.</p>
+            <div class="cards-row">
+                <div class="card chart-card half">
+                    <h3>Sector Allocation</h3>
+                    <canvas id="chartSector"></canvas>
+                </div>
+                <div class="card chart-card half">
+                    <h3>Exchange Allocation</h3>
+                    <canvas id="chartExchangeDiv"></canvas>
+                </div>
+            </div>
+            <div class="card suggestions-card">
+                <h3>Diversification Tips</h3>
+                <ul id="diversificationSuggestions"></ul>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
