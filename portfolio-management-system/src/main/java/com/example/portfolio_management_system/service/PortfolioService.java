@@ -1,6 +1,6 @@
 package com.example.portfolio_management_system.service;
 
-import com.example.portfolio_management_system.dto.PortfolioSummary;
+import com.example.portfolio_management_system.dto.PortfolioItemDTO;
 import com.example.portfolio_management_system.model.Holding;
 import com.example.portfolio_management_system.repository.HoldingRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,28 +13,20 @@ import java.util.List;
 public class PortfolioService {
 
     private final HoldingRepository holdingRepository;
-    private final MarketPriceService marketPriceService;
-    private final AlphaVantageService alphaVantageService;
-    public PortfolioSummary getPortfolioSummary(Long holderId) {
+
+    public List<PortfolioItemDTO> getPortfolioByHolder(Long holderId) {
 
         List<Holding> holdings = holdingRepository.findByHolderId(holderId);
 
-        double totalInvested = 0;
-        double currentValue = 0;
-
-        for (Holding h : holdings) {
-
-            double invested = h.getAvgPrice() * h.getQuantity();
-            totalInvested += invested;
-
-            double livePrice = alphaVantageService.getLivePrice(h.getStockSymbol());
-
-
-            currentValue += livePrice * h.getQuantity();
-        }
-
-        double profitLoss = currentValue - totalInvested;
-
-        return new PortfolioSummary(totalInvested, currentValue, profitLoss);
+        return holdings.stream().map(h ->
+                new PortfolioItemDTO(
+                        h.getStock().getSymbol(),
+                        h.getStock().getName(),
+                        h.getStock().getSector(),
+                        h.getStock().getBasePrice(),
+                        h.getQuantity(),
+                        h.getQuantity() * h.getStock().getBasePrice()
+                )
+        ).toList();
     }
 }

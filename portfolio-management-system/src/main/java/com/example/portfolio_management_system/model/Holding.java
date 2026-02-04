@@ -1,5 +1,6 @@
 package com.example.portfolio_management_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,11 +17,17 @@ public class Holding {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String stockSymbol;
     private Integer quantity;
     private Double avgPrice;
 
+    // ✅ Stock Object Relation
+    @ManyToOne
+    @JoinColumn(name = "stock_symbol")
+    private Stock stock;
+
+    // ✅ Holder Relation
     @ManyToOne
     @JoinColumn(name = "holder_id")
+    @JsonIgnore
     private Holder holder;
 }

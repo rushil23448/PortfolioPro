@@ -1,20 +1,25 @@
 package com.example.portfolio_management_system.controller;
 
-import com.example.portfolio_management_system.dto.PortfolioSummary;
-import com.example.portfolio_management_system.service.PortfolioService;
-import lombok.RequiredArgsConstructor;
+import com.example.portfolio_management_system.model.Holding;
+import com.example.portfolio_management_system.repository.HoldingRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/portfolio")
-@RequiredArgsConstructor
+@RequestMapping("/api/portfolio")
+@CrossOrigin("*")
 public class PortfolioController {
 
-    private final PortfolioService portfolioService;
+    private final HoldingRepository holdingRepository;
 
-    // Portfolio Summary API
-    @GetMapping("/summary/{holderId}")
-    public PortfolioSummary getSummary(@PathVariable Long holderId) {
-        return portfolioService.getPortfolioSummary(holderId);
+    public PortfolioController(HoldingRepository holdingRepository) {
+        this.holdingRepository = holdingRepository;
+    }
+
+    // ✅ Get portfolio of holder by ID
+    @GetMapping("/{holderId}")
+    public List<Holding> getPortfolio(@PathVariable Long holderId) {
+        return holdingRepository.findByHolderId(holderId);
     }
 }

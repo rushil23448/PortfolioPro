@@ -18,12 +18,9 @@ public class Stock {
     private String symbol;
 
     private String name;
-
     private String sector;
 
-    // ✅ New Fields
     private Double basePrice;
-
     private Double volatility;
 
     private Integer confidenceScore;

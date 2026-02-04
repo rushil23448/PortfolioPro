@@ -8,4 +8,5 @@ import java.util.List;
 public interface HoldingRepository extends JpaRepository<Holding, Long> {
 
     List<Holding> findByHolderId(Long holderId);
+
 }
