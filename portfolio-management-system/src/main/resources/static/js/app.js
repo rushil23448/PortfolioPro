@@ -4,6 +4,7 @@ const currentValue = document.getElementById("currentValue");
 const profitLoss = document.getElementById("profitLoss");
 const holdingsTable = document.getElementById("holdingsTable");
 const profitCard = document.getElementById("profitCard");
+const recommendationTable = document.getElementById("recommendationTable");
 
 let pieChart;
 
@@ -24,6 +25,62 @@ async function loadHolders() {
         loadPortfolio(holders[0].id);
     }
 }
+
+async function loadRecommendations() {
+
+    recommendationTable.innerHTML = "";
+
+    try {
+        const res = await fetch("/stocks/recommendations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!res.ok) {
+            console.error("Failed to fetch recommendations");
+            return;
+        }
+
+        const data = await res.json();
+
+        // Ensure only TOP 5
+        const top5 = data
+            .sort((a, b) => b.confidenceScore - a.confidenceScore)
+            .slice(0, 5);
+
+        if (top5.length === 0) {
+            recommendationTable.innerHTML =
+                `<tr><td colspan="6">No recommendations available</td></tr>`;
+            return;
+        }
+
+        top5.forEach(stock => {
+
+            let confidenceColor =
+                stock.confidenceScore >= 90 ? "green" :
+                stock.confidenceScore >= 75 ? "orange" : "red";
+
+            recommendationTable.innerHTML += `
+                <tr>
+                    <td>${stock.symbol}</td>
+                    <td>${stock.name}</td>
+                    <td>${stock.sector}</td>
+                    <td>₹${stock.basePrice.toFixed(2)}</td>
+                    <td>${(stock.volatility * 100).toFixed(2)}%</td>
+                    <td style="color:${confidenceColor}; font-weight:bold">
+                        ${stock.confidenceScore}%
+                    </td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error("Recommendation error:", err);
+    }
+}
+
 
 // Portfolio Summary + Holdings
 async function loadPortfolio(holderId) {
@@ -122,3 +179,4 @@ holderSelect.addEventListener("change", () => {
 
 // Start
 loadHolders();
+loadRecommendations();

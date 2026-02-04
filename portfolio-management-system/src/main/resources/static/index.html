@@ -21,6 +21,7 @@
             <li>Add Holder</li>
             <li>Add Holding</li>
             <li>Analytics</li>
+            <li>Recommendation</li>
         </ul>
     </aside>
 
@@ -99,6 +100,26 @@
             <h2>📈 Diversification Chart</h2>
             <canvas id="pieChart"></canvas>
         </section>
+
+        <!-- Recommendations -->
+        <section class="table-section">
+            <h2>🤖 Top 5 Stock Recommendations</h2>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Name</th>
+                    <th>Sector</th>
+                    <th>Base Price</th>
+                    <th>Volatility</th>
+                    <th>Confidence</th>
+                </tr>
+                </thead>
+                <tbody id="recommendationTable"></tbody>
+            </table>
+        </section>
+
 
     </main>
 </div>
