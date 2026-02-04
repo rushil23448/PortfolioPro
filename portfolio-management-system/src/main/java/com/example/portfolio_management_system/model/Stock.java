@@ -1,6 +1,8 @@
 package com.example.portfolio_management_system.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
@@ -18,4 +20,11 @@ public class Stock {
     private String name;
 
     private String sector;
+
+    // ✅ New Fields
+    private Double basePrice;
+
+    private Double volatility;
+
+    private Integer confidenceScore;
 }
