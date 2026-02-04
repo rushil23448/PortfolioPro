@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface HoldingRepository extends JpaRepository<Holding, Long> {
 
+    // ✅ Find holdings by holder ID
     List<Holding> findByHolderId(Long holderId);
 
 }
