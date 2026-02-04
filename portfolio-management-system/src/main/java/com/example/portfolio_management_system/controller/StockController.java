@@ -23,4 +23,9 @@ public class StockController {
     public Stock addStock(@RequestBody Stock stock) {
         return stockRepository.save(stock);
     }
+
+    @PostMapping("/recommendations")
+    public List<Stock> getRecommendedStocks() {
+        return stockRepository.findTop5ByOrderByConfidenceScoreDesc();
+    }
 }
