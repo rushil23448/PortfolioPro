@@ -3,127 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinTech Portfolio Dashboard</title>
-
+    <title>PortfolioPro - Portfolio Management System</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
+    <div class="dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <h2>PortfolioPro</h2>
+            <ul>
+                <li class="active" onclick="showSection('dashboard')">Dashboard</li>
+                <li onclick="showSection('holders')">Add Holder</li>
+                <li onclick="showSection('holdings')">Add Holding</li>
+                <li onclick="showSection('analytics')">Analytics</li>
+                <li onclick="showSection('recommendations')">Recommendation</li>
+            </ul>
+        </aside>
 
-<div class="dashboard">
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="topbar">
+                <h1>Portfolio Management System</h1>
+                <p>Multi-Holder Portfolio Dashboard</p>
+            </header>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2>📊 PortfolioPro</h2>
-        <ul>
-            <li class="active">Dashboard</li>
-            <li>Add Holder</li>
-            <li>Add Holding</li>
-            <li>Analytics</li>
-            <li>Recommendation</li>
-        </ul>
-    </aside>
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section active">
+                <!-- Holder Selector -->
+                <div class="holder-select">
+                    <label>Select Holder:</label>
+                    <select id="holderSelect" onchange="handleHolderChange()">
+                        <option value="">No holders available</option>
+                    </select>
+                </div>
 
-    <!-- Main Content -->
-    <main class="main">
+                <!-- Summary Cards -->
+                <div class="cards">
+                    <div class="card">
+                        <h3>Total Invested</h3>
+                        <p id="investedValue">₹0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Current Value</h3>
+                        <p id="currentValue">₹0</p>
+                    </div>
+                    <div class="card" id="profitCard">
+                        <h3>Profit / Loss</h3>
+                        <p id="profitLoss">₹0</p>
+                    </div>
+                </div>
 
-        <!-- Header -->
-        <header class="topbar">
-            <h1>Portfolio Management System</h1>
-            <p>Multi-Holder Portfolio Dashboard</p>
-        </header>
+                <!-- Holdings Table -->
+                <div class="table-section">
+                    <h2>Holdings</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Stock</th>
+                                <th>Quantity</th>
+                                <th>Avg Price</th>
+                                <th>Current Price</th>
+                                <th>Current Value</th>
+                                <th>P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdingsTable">
+                            <tr><td colspan="6">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <!-- Holder Dropdown -->
-        <section class="holder-select">
-            <label>Select Holder:</label>
-            <select id="holderSelect"></select>
-        </section>
+                <!-- Diversification Chart -->
+                <div class="chart-section">
+                    <h2>Diversification Chart</h2>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </section>
 
-        <!-- Summary Cards -->
-        <section class="cards">
-            <div class="card">
-                <h3>Total Invested</h3>
-                <p id="investedValue">₹0</p>
-            </div>
+            <!-- Add Holder Section -->
+            <section id="holders-section" class="section" style="display: none;">
+                <div class="form-box" style="max-width: 500px;">
+                    <h2>Add New Holder</h2>
+                    <input type="text" id="holderName" placeholder="Holder Name">
+                    <input type="email" id="holderEmail" placeholder="Holder Email">
+                    <button onclick="addHolder()">Add Holder</button>
+                </div>
+            </section>
 
-            <div class="card">
-                <h3>Current Value</h3>
-                <p id="currentValue">₹0</p>
-            </div>
+            <!-- Add Holding Section -->
+            <section id="holdings-section" class="section" style="display: none;">
+                <div class="form-box" style="max-width: 500px;">
+                    <h2>Add New Holding</h2>
+                    <select id="holderSelectHolding">
+                        <option value="">Select Holder First</option>
+                    </select>
+                    <input type="text" id="stockSymbol" placeholder="Stock Symbol (e.g., TCS)">
+                    <input type="number" id="quantity" placeholder="Quantity" min="1">
+                    <input type="number" id="avgPrice" placeholder="Avg Buy Price" step="0.01" min="0">
+                    <button onclick="addHolding()">Add Holding</button>
+                </div>
+            </section>
 
-            <div class="card" id="profitCard">
-                <h3>Profit / Loss</h3>
-                <p id="profitLoss">₹0</p>
-            </div>
-        </section>
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="section" style="display: none;">
+                <h2>Portfolio Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="card">
+                        <h3>Total Holdings</h3>
+                        <p id="totalHoldings">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Unique Stocks</h3>
+                        <p id="uniqueStocks">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Average Return</h3>
+                        <p id="avgReturn">0%</p>
+                    </div>
+                    <div class="card">
+                        <h3>Best Performer</h3>
+                        <p id="bestPerformer">-</p>
+                    </div>
+                </div>
+                <div class="chart-section">
+                    <h2>Sector Allocation</h2>
+                    <canvas id="sectorChart"></canvas>
+                </div>
+            </section>
 
-        <!-- Forms -->
-        <section class="forms">
+            <!-- Recommendations Section -->
+            <section id="recommendations-section" class="section" style="display: none;">
+                <h2>Top 5 Stock Recommendations</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th>Sector</th>
+                            <th>Base Price</th>
+                            <th>Volatility</th>
+                            <th>Confidence</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recommendationTable">
+                        <tr><td colspan="7">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </section>
 
-            <!-- Add Holder -->
-            <div class="form-box">
-                <h2>➕ Add Holder</h2>
-                <input type="text" id="holderName" placeholder="Holder Name">
-                <input type="email" id="holderEmail" placeholder="Holder Email">
-                <button onclick="addHolder()">Add Holder</button>
-            </div>
+        </main>
+    </div>
 
-            <!-- Add Holding -->
-            <div class="form-box">
-                <h2>➕ Add Holding</h2>
-                <input type="text" id="stockSymbol" placeholder="Stock Symbol (TCS)">
-                <input type="number" id="quantity" placeholder="Quantity">
-                <input type="number" id="avgPrice" placeholder="Avg Buy Price">
-                <button onclick="addHolding()">Add Holding</button>
-            </div>
-
-        </section>
-
-        <!-- Holdings Table -->
-        <section class="table-section">
-            <h2>📌 Holdings</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Stock</th>
-                    <th>Qty</th>
-                    <th>Avg Price</th>
-                </tr>
-                </thead>
-                <tbody id="holdingsTable"></tbody>
-            </table>
-        </section>
-
-        <!-- Diversification -->
-        <section class="chart-section">
-            <h2>📈 Diversification Chart</h2>
-            <canvas id="pieChart"></canvas>
-        </section>
-
-        <!-- Recommendations -->
-        <section class="table-section">
-            <h2>🤖 Top 5 Stock Recommendations</h2>
-
-            <table>
-                <thead>
-                <tr>
-                    <th>Symbol</th>
-                    <th>Name</th>
-                    <th>Sector</th>
-                    <th>Base Price</th>
-                    <th>Volatility</th>
-                    <th>Confidence</th>
-                </tr>
-                </thead>
-                <tbody id="recommendationTable"></tbody>
-            </table>
-        </section>
-
-
-    </main>
-</div>
-
-<script src="js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
+

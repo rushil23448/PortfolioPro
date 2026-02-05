@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/stocks")
 @CrossOrigin(origins = "*")
 public class StockController {
 
@@ -18,7 +17,7 @@ public class StockController {
     }
 
     // ✅ API: Get all stocks with live prices
-    @GetMapping
+    @GetMapping("/stocks")
     public List<Stock> getAllStocks() {
         return stockRepository.findAll();
     }

@@ -1,7 +1,11 @@
 package com.example.portfolio_management_system.dto;
 
 import java.util.Map;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -19,5 +23,12 @@ public class PortfolioAnalyticsResponse {
     private Integer diversificationScore;
     private Integer riskScore;
 
+    // Frontend fields
+    private Integer totalHoldings;
+    private Integer uniqueStocks;
+    private Double averageReturn;
+    private String bestPerformer;
+
     private Map<String, Double> sectorAllocation;
 }
+
