@@ -52,95 +52,106 @@ public class DataSeeder implements CommandLineRunner {
         // -------------------------------
         List<Stock> stocks = List.of(
 
-                new Stock("RELIANCE", "Reliance Industries", "Energy", 2500.0, 0.25, 90, 2500.0),
-                new Stock("INFY", "Infosys", "IT", 1500.0, 0.22, 91, 1500.0),
-                new Stock("HDFCBANK", "HDFC Bank", "Banking", 1600.0, 0.18, 93, 1600.0),
-                new Stock("ICICIBANK", "ICICI Bank", "Banking", 1100.0, 0.19, 91, 1100.0),
-                new Stock("SBIN", "State Bank of India", "Banking", 750.0, 0.24, 88, 750.0),
-                new Stock("AXISBANK", "Axis Bank", "Banking", 1050.0, 0.21, 87, 1050.0),
-                new Stock("KOTAKBANK", "Kotak Mahindra Bank", "Banking", 1800.0, 0.17, 89, 1800.0),
+                Stock.builder().symbol("RELIANCE").name("Reliance Industries").sector("Energy")
+                        .basePrice(2500.0).volatility(0.25).confidenceScore(90).currentPrice(2500.0).build(),
 
-                new Stock("LT", "Larsen & Toubro", "Infrastructure", 3200.0, 0.23, 90, 3200.0),
-                new Stock("ITC", "ITC Limited", "FMCG", 450.0, 0.15, 92, 450.0),
-                new Stock("HINDUNILVR", "Hindustan Unilever", "FMCG", 2600.0, 0.16, 91, 2600.0),
-                new Stock("NESTLEIND", "Nestle India", "FMCG", 24000.0, 0.14, 92, 24000.0),
+                Stock.builder().symbol("TCS").name("Tata Consultancy Services").sector("IT")
+                        .basePrice(3400.0).volatility(0.20).confidenceScore(92).currentPrice(3400.0).build(),
 
-                new Stock("BAJFINANCE", "Bajaj Finance", "Finance", 7200.0, 0.28, 89, 7200.0),
-                new Stock("BAJAJFINSV", "Bajaj Finserv", "Finance", 1650.0, 0.25, 88, 1650.0),
-                new Stock("HDFCLIFE", "HDFC Life Insurance", "Insurance", 650.0, 0.20, 87, 650.0),
-                new Stock("SBILIFE", "SBI Life Insurance", "Insurance", 1350.0, 0.19, 88, 1350.0),
+                Stock.builder().symbol("INFY").name("Infosys").sector("IT")
+                        .basePrice(1500.0).volatility(0.22).confidenceScore(91).currentPrice(1500.0).build(),
 
-                new Stock("BHARTIARTL", "Bharti Airtel", "Telecom", 1200.0, 0.20, 88, 1200.0),
-                new Stock("ASIANPAINT", "Asian Paints", "Consumer", 3100.0, 0.18, 90, 3100.0),
-                new Stock("TITAN", "Titan Company", "Consumer", 3500.0, 0.19, 91, 3500.0),
-                new Stock("MARUTI", "Maruti Suzuki", "Automobile", 9800.0, 0.22, 89, 9800.0),
-                new Stock("TATAMOTORS", "Tata Motors", "Automobile", 850.0, 0.30, 85, 850.0),
-                new Stock("M&M", "Mahindra & Mahindra", "Automobile", 1600.0, 0.24, 87, 1600.0),
-                new Stock("HEROMOTOCO", "Hero MotoCorp", "Automobile", 4500.0, 0.21, 86, 4500.0),
-                new Stock("BAJAJ-AUTO", "Bajaj Auto", "Automobile", 9000.0, 0.20, 88, 9000.0),
+                Stock.builder().symbol("HDFCBANK").name("HDFC Bank").sector("Banking")
+                        .basePrice(1600.0).volatility(0.18).confidenceScore(93).currentPrice(1600.0).build(),
 
-                new Stock("SUNPHARMA", "Sun Pharma", "Healthcare", 1500.0, 0.21, 90, 1500.0),
-                new Stock("DRREDDY", "Dr Reddy Labs", "Healthcare", 5800.0, 0.20, 88, 5800.0),
-                new Stock("CIPLA", "Cipla", "Healthcare", 1400.0, 0.22, 87, 1400.0),
-                new Stock("APOLLOHOSP", "Apollo Hospitals", "Healthcare", 6200.0, 0.23, 89, 6200.0),
-                new Stock("DIVISLAB", "Divi’s Laboratories", "Healthcare", 3900.0, 0.20, 88, 3900.0),
+                Stock.builder().symbol("ICICIBANK").name("ICICI Bank").sector("Banking")
+                        .basePrice(1100.0).volatility(0.19).confidenceScore(91).currentPrice(1100.0).build(),
 
-                new Stock("WIPRO", "Wipro", "IT", 480.0, 0.25, 85, 480.0),
-                new Stock("HCLTECH", "HCL Technologies", "IT", 1450.0, 0.22, 87, 1450.0),
-                new Stock("TECHM", "Tech Mahindra", "IT", 1250.0, 0.24, 86, 1250.0),
-                new Stock("LTIM", "LTIMindtree", "IT", 5400.0, 0.21, 88, 5400.0),
+                Stock.builder().symbol("SBIN").name("State Bank of India").sector("Banking")
+                        .basePrice(750.0).volatility(0.24).confidenceScore(88).currentPrice(750.0).build(),
 
-                new Stock("ULTRACEMCO", "UltraTech Cement", "Cement", 9800.0, 0.20, 89, 9800.0),
-                new Stock("SHREECEM", "Shree Cement", "Cement", 26000.0, 0.19, 88, 26000.0),
-                new Stock("GRASIM", "Grasim Industries", "Cement", 1850.0, 0.22, 87, 1850.0),
-                new Stock("AMBUJACEM", "Ambuja Cement", "Cement", 550.0, 0.23, 86, 550.0),
+                Stock.builder().symbol("AXISBANK").name("Axis Bank").sector("Banking")
+                        .basePrice(1050.0).volatility(0.21).confidenceScore(87).currentPrice(1050.0).build(),
 
-                new Stock("ADANIENT", "Adani Enterprises", "Conglomerate", 3200.0, 0.35, 80, 3200.0),
-                new Stock("ADANIPORTS", "Adani Ports", "Logistics", 1100.0, 0.30, 82, 1100.0),
-                new Stock("ADANIGREEN", "Adani Green Energy", "Renewable", 1800.0, 0.40, 78, 1800.0),
+                Stock.builder().symbol("KOTAKBANK").name("Kotak Mahindra Bank").sector("Banking")
+                        .basePrice(1800.0).volatility(0.17).confidenceScore(89).currentPrice(1800.0).build(),
 
-                new Stock("ONGC", "ONGC", "Energy", 250.0, 0.28, 85, 250.0),
-                new Stock("IOC", "Indian Oil", "Energy", 140.0, 0.26, 84, 140.0),
-                new Stock("BPCL", "Bharat Petroleum", "Energy", 450.0, 0.27, 83, 450.0),
+                Stock.builder().symbol("LT").name("Larsen & Toubro").sector("Infrastructure")
+                        .basePrice(3200.0).volatility(0.23).confidenceScore(90).currentPrice(3200.0).build(),
 
-                new Stock("POWERGRID", "Power Grid Corp", "Utilities", 280.0, 0.18, 87, 280.0),
-                new Stock("NTPC", "NTPC Limited", "Utilities", 310.0, 0.19, 88, 310.0),
-                new Stock("TATAPOWER", "Tata Power", "Utilities", 420.0, 0.22, 85, 420.0),
+                Stock.builder().symbol("ITC").name("ITC Limited").sector("FMCG")
+                        .basePrice(450.0).volatility(0.15).confidenceScore(92).currentPrice(450.0).build(),
 
-                new Stock("JSWSTEEL", "JSW Steel", "Metals", 850.0, 0.27, 84, 850.0),
-                new Stock("TATASTEEL", "Tata Steel", "Metals", 145.0, 0.30, 82, 145.0),
-                new Stock("HINDALCO", "Hindalco Industries", "Metals", 520.0, 0.28, 83, 520.0),
+                Stock.builder().symbol("HINDUNILVR").name("Hindustan Unilever").sector("FMCG")
+                        .basePrice(2600.0).volatility(0.16).confidenceScore(91).currentPrice(2600.0).build(),
 
-                new Stock("COALINDIA", "Coal India", "Mining", 420.0, 0.20, 86, 420.0),
-                new Stock("VEDL", "Vedanta Limited", "Mining", 260.0, 0.33, 80, 260.0),
+                Stock.builder().symbol("NESTLEIND").name("Nestle India").sector("FMCG")
+                        .basePrice(24000.0).volatility(0.14).confidenceScore(92).currentPrice(24000.0).build(),
 
-                new Stock("DMART", "Avenue Supermarts", "Retail", 4200.0, 0.18, 90, 4200.0),
-                new Stock("TRENT", "Trent Limited", "Retail", 3500.0, 0.25, 85, 3500.0),
+                Stock.builder().symbol("BAJFINANCE").name("Bajaj Finance").sector("Finance")
+                        .basePrice(7200.0).volatility(0.28).confidenceScore(89).currentPrice(7200.0).build(),
 
-                new Stock("PIDILITIND", "Pidilite Industries", "Chemicals", 2800.0, 0.20, 88, 2800.0),
-                new Stock("UPL", "UPL Limited", "Chemicals", 650.0, 0.27, 82, 650.0),
-                new Stock("SRF", "SRF Limited", "Chemicals", 2500.0, 0.23, 84, 2500.0),
+                Stock.builder().symbol("BAJAJFINSV").name("Bajaj Finserv").sector("Finance")
+                        .basePrice(1650.0).volatility(0.25).confidenceScore(88).currentPrice(1650.0).build(),
 
-                new Stock("INDIGO", "IndiGo Airlines", "Aviation", 2400.0, 0.30, 83, 2400.0),
-                new Stock("IRCTC", "IRCTC", "Travel", 900.0, 0.25, 84, 900.0),
+                Stock.builder().symbol("BHARTIARTL").name("Bharti Airtel").sector("Telecom")
+                        .basePrice(1200.0).volatility(0.20).confidenceScore(88).currentPrice(1200.0).build(),
 
-                new Stock("ZOMATO", "Zomato", "Tech", 140.0, 0.40, 78, 140.0),
-                new Stock("PAYTM", "Paytm", "FinTech", 420.0, 0.45, 70, 420.0),
-                new Stock("NYKAA", "Nykaa", "E-Commerce", 160.0, 0.38, 76, 160.0),
+                Stock.builder().symbol("ASIANPAINT").name("Asian Paints").sector("Consumer")
+                        .basePrice(3100.0).volatility(0.18).confidenceScore(90).currentPrice(3100.0).build(),
 
-                new Stock("DABUR", "Dabur India", "FMCG", 550.0, 0.18, 88, 550.0),
-                new Stock("BRITANNIA", "Britannia Industries", "FMCG", 5200.0, 0.16, 90, 5200.0),
-                new Stock("COLPAL", "Colgate Palmolive", "FMCG", 2400.0, 0.15, 89, 2400.0),
+                Stock.builder().symbol("TITAN").name("Titan Company").sector("Consumer")
+                        .basePrice(3500.0).volatility(0.19).confidenceScore(91).currentPrice(3500.0).build(),
 
-                new Stock("BEL", "Bharat Electronics", "Defense", 180.0, 0.25, 85, 180.0),
-                new Stock("HAL", "Hindustan Aeronautics", "Defense", 3200.0, 0.22, 88, 3200.0),
+                Stock.builder().symbol("MARUTI").name("Maruti Suzuki").sector("Automobile")
+                        .basePrice(9800.0).volatility(0.22).confidenceScore(89).currentPrice(9800.0).build(),
 
-                new Stock("LICI", "LIC India", "Insurance", 850.0, 0.20, 86, 850.0),
-                new Stock("TATAELXSI", "Tata Elxsi", "IT", 8200.0, 0.24, 87, 8200.0),
+                Stock.builder().symbol("TATAMOTORS").name("Tata Motors").sector("Automobile")
+                        .basePrice(850.0).volatility(0.30).confidenceScore(85).currentPrice(850.0).build(),
 
-                new Stock("LUPIN", "Lupin", "Healthcare", 1400.0, 0.24, 83, 1400.0)
+                Stock.builder().symbol("M&M").name("Mahindra & Mahindra").sector("Automobile")
+                        .basePrice(1600.0).volatility(0.24).confidenceScore(87).currentPrice(1600.0).build(),
 
+                Stock.builder().symbol("SUNPHARMA").name("Sun Pharma").sector("Healthcare")
+                        .basePrice(1500.0).volatility(0.21).confidenceScore(90).currentPrice(1500.0).build(),
+
+                Stock.builder().symbol("DRREDDY").name("Dr Reddy Labs").sector("Healthcare")
+                        .basePrice(5800.0).volatility(0.20).confidenceScore(88).currentPrice(5800.0).build(),
+
+                Stock.builder().symbol("CIPLA").name("Cipla").sector("Healthcare")
+                        .basePrice(1400.0).volatility(0.22).confidenceScore(87).currentPrice(1400.0).build(),
+
+                Stock.builder().symbol("WIPRO").name("Wipro").sector("IT")
+                        .basePrice(480.0).volatility(0.25).confidenceScore(85).currentPrice(480.0).build(),
+
+                Stock.builder().symbol("HCLTECH").name("HCL Technologies").sector("IT")
+                        .basePrice(1450.0).volatility(0.22).confidenceScore(87).currentPrice(1450.0).build(),
+
+                Stock.builder().symbol("TECHM").name("Tech Mahindra").sector("IT")
+                        .basePrice(1250.0).volatility(0.24).confidenceScore(86).currentPrice(1250.0).build(),
+
+                Stock.builder().symbol("ZOMATO").name("Zomato").sector("Tech")
+                        .basePrice(140.0).volatility(0.40).confidenceScore(78).currentPrice(140.0).build(),
+
+                Stock.builder().symbol("PAYTM").name("Paytm").sector("FinTech")
+                        .basePrice(420.0).volatility(0.45).confidenceScore(70).currentPrice(420.0).build(),
+
+                Stock.builder().symbol("DMART").name("Avenue Supermarts").sector("Retail")
+                        .basePrice(4200.0).volatility(0.18).confidenceScore(90).currentPrice(4200.0).build(),
+
+                Stock.builder().symbol("IRCTC").name("IRCTC").sector("Travel")
+                        .basePrice(900.0).volatility(0.25).confidenceScore(84).currentPrice(900.0).build(),
+
+                Stock.builder().symbol("HAL").name("Hindustan Aeronautics").sector("Defense")
+                        .basePrice(3200.0).volatility(0.22).confidenceScore(88).currentPrice(3200.0).build(),
+
+                Stock.builder().symbol("BEL").name("Bharat Electronics").sector("Defense")
+                        .basePrice(180.0).volatility(0.25).confidenceScore(85).currentPrice(180.0).build(),
+
+                Stock.builder().symbol("LUPIN").name("Lupin").sector("Healthcare")
+                        .basePrice(1400.0).volatility(0.24).confidenceScore(83).currentPrice(1400.0).build()
         );
+
 
         // ✅ Save all stocks
         stockRepository.saveAll(stocks);

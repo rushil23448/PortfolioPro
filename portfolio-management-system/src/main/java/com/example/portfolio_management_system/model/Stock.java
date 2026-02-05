@@ -1,8 +1,6 @@
 package com.example.portfolio_management_system.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -24,6 +22,9 @@ public class Stock {
     private Double volatility;
     private Integer confidenceScore;
 
-    // ✅ NEW FIELD: Current Market Price
     private Double currentPrice;
+
+    // 🔥 Dumb Money Indicator
+    @Enumerated(EnumType.STRING)
+    private DumbMoneySignal dumbMoneySignal;
 }

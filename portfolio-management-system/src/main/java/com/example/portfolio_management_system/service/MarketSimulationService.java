@@ -12,16 +12,15 @@ import java.util.Random;
 public class MarketSimulationService {
 
     private final StockRepository stockRepository;
+    private final DumbMoneyService dumbMoneyService;
     private final Random random = new Random();
 
-    public MarketSimulationService(StockRepository stockRepository) {
+    public MarketSimulationService(StockRepository stockRepository,
+                                   DumbMoneyService dumbMoneyService) {
         this.stockRepository = stockRepository;
+        this.dumbMoneyService = dumbMoneyService;
     }
 
-    /**
-     * Runs every 5 seconds
-     * Simulates market movement + updates confidence score
-     */
     @Scheduled(fixedRate = 5000)
     public void updateStockPrices() {
 
@@ -29,54 +28,52 @@ public class MarketSimulationService {
 
         for (Stock stock : stocks) {
 
-            // ----------------------------
-            // 1. PRICE SIMULATION
-            // ----------------------------
-            double currentPrice = stock.getCurrentPrice();
+            double currentPrice =
+                    stock.getCurrentPrice() != null
+                            ? stock.getCurrentPrice()
+                            : stock.getBasePrice();
+
             double volatility = stock.getVolatility();
 
-            // random price change (-volatility% to +volatility%)
+            // 📈 Price movement
             double priceChangePercent =
                     (random.nextDouble() * 2 - 1) * volatility;
 
             double newPrice =
                     currentPrice * (1 + priceChangePercent);
 
-            // prevent unrealistic crash
             newPrice = Math.max(newPrice, stock.getBasePrice() * 0.4);
 
-            // ----------------------------
-            // 2. CONFIDENCE UPDATE LOGIC
-            // ----------------------------
+            // round price
+            newPrice = Math.round(newPrice * 100.0) / 100.0;
+
+            // 🧠 Confidence logic
             int confidence = stock.getConfidenceScore();
 
             if (priceChangePercent > 0) {
-                // price went up
                 if (priceChangePercent < 0.01) confidence += 1;
                 else if (priceChangePercent < 0.03) confidence += 2;
                 else confidence += 3;
             } else {
-                // price went down
                 if (priceChangePercent > -0.01) confidence -= 1;
                 else if (priceChangePercent > -0.03) confidence -= 2;
                 else confidence -= 4;
             }
 
-            // volatility penalty
             if (volatility > 0.30) confidence -= 1;
 
-            // clamp confidence between 0 and 100
             confidence = Math.max(0, Math.min(100, confidence));
 
-            // ----------------------------
-            // 3. SAVE UPDATES
-            // ----------------------------
+            // 🔥 Dumb Money Evaluation
             stock.setCurrentPrice(newPrice);
             stock.setConfidenceScore(confidence);
+            stock.setDumbMoneySignal(
+                    dumbMoneyService.evaluate(stock)
+            );
 
             stockRepository.save(stock);
         }
 
-        System.out.println("📈 Market prices & confidence updated");
+        System.out.println("📊 Market + Confidence + Dumb Money updated");
     }
 }
