@@ -30,6 +30,19 @@ public class PortfolioAnalyticsService {
 
         List<Holding> holdings = holdingRepository.findByHolderId(holderId);
 
+        // If no holdings, return zeros/empty allocation
+        if (holdings == null || holdings.isEmpty()) {
+            return PortfolioAnalyticsResponse.builder()
+                    .holderName(holderName)
+                    .totalInvested(0.0)
+                    .currentValue(0.0)
+                    .profitLoss(0.0)
+                    .diversificationScore(0)
+                    .riskScore(0)
+                    .sectorAllocation(new HashMap<>())
+                    .build();
+        }
+
         double totalInvested = 0;
         double currentValue = 0;
 
