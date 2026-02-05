@@ -18,7 +18,10 @@ public class MarketSimulationService {
         this.stockRepository = stockRepository;
     }
 
-    // ✅ Market Updates Every 5 Seconds
+    /**
+     * Runs every 5 seconds
+     * Simulates market movement + updates confidence score
+     */
     @Scheduled(fixedRate = 5000)
     public void updateStockPrices() {
 
@@ -26,28 +29,54 @@ public class MarketSimulationService {
 
         for (Stock stock : stocks) {
 
-            double base = stock.getBasePrice();
+            // ----------------------------
+            // 1. PRICE SIMULATION
+            // ----------------------------
+            double currentPrice = stock.getCurrentPrice();
             double volatility = stock.getVolatility();
+
+            // random price change (-volatility% to +volatility%)
+            double priceChangePercent =
+                    (random.nextDouble() * 2 - 1) * volatility;
+
+            double newPrice =
+                    currentPrice * (1 + priceChangePercent);
+
+            // prevent unrealistic crash
+            newPrice = Math.max(newPrice, stock.getBasePrice() * 0.4);
+
+            // ----------------------------
+            // 2. CONFIDENCE UPDATE LOGIC
+            // ----------------------------
             int confidence = stock.getConfidenceScore();
 
-            // Confidence stabilizes price movement
-            double marketFactor = (100 - confidence) / 100.0;
+            if (priceChangePercent > 0) {
+                // price went up
+                if (priceChangePercent < 0.01) confidence += 1;
+                else if (priceChangePercent < 0.03) confidence += 2;
+                else confidence += 3;
+            } else {
+                // price went down
+                if (priceChangePercent > -0.01) confidence -= 1;
+                else if (priceChangePercent > -0.03) confidence -= 2;
+                else confidence -= 4;
+            }
 
-            // Random movement between -0.5 and +0.5
-            double randomMove =
-                    (random.nextDouble() - 0.5)
-                            * base
-                            * volatility
-                            * marketFactor;
+            // volatility penalty
+            if (volatility > 0.30) confidence -= 1;
 
-            double newPrice = stock.getCurrentPrice() + randomMove;
+            // clamp confidence between 0 and 100
+            confidence = Math.max(0, Math.min(100, confidence));
 
-            // Prevent negative price
-            stock.setCurrentPrice(Math.max(newPrice, 1));
+            // ----------------------------
+            // 3. SAVE UPDATES
+            // ----------------------------
+            stock.setCurrentPrice(newPrice);
+            stock.setConfidenceScore(confidence);
+
+            stockRepository.save(stock);
         }
 
-        stockRepository.saveAll(stocks);
-
-        System.out.println("📈 Market prices updated successfully!");
+        System.out.println("📈 Market prices & confidence updated");
     }
 }
