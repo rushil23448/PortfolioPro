@@ -18,10 +18,9 @@
         <h2>📊 PortfolioPro</h2>
         <ul>
             <li class="active">Dashboard</li>
-            <li>Add Holder</li>
-            <li>Add Holding</li>
-            <li>Analytics</li>
-            <li>Recommendation</li>
+            <li><a href="#addHolderAndHoldings" id="addHolderBtn">Add Holder and Holdings</a></li>
+            <li><a href="#holdings">Holdings</a></li>
+            <li><a href="#recommendations">Recommendation</a></li>
         </ul>
     </aside>
 
@@ -57,10 +56,13 @@
                 <p id="profitLoss">₹0</p>
             </div>
         </section>
+        <!-- Add Holder and Holding Button -->
+        <section class="form-section">
+            <button id="addHolderAndHoldingsBtn">Add Holder and Holdings</button>
+        </section>
 
-        <!-- Forms -->
-        <section class="forms">
-
+        <!-- Forms (Initially Hidden) -->
+        <section class="forms" id="formsSection" style="display: none;">
             <!-- Add Holder -->
             <div class="form-box">
                 <h2>➕ Add Holder</h2>
@@ -69,6 +71,7 @@
                 <button onclick="addHolder()">Add Holder</button>
             </div>
 
+            <!-- Add Holding -->
             <!-- Add Holding -->
             <div class="form-box">
                 <h2>➕ Add Holding</h2>
