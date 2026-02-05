@@ -12,7 +12,12 @@
 <div class="app-container">
     <nav class="sidebar">
         <div class="brand">
-            <div class="logo-icon">P</div>
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
             <div class="brand-text">
                 <h2>PortfolioPro</h2>
                 <span>AI Intelligence</span>
@@ -66,6 +71,12 @@
                 <button id="refresh-btn" class="icon-btn" title="Force Refresh">🔄</button>
             </div>
         </header>
+
+        <div class="stock-ticker">
+            <div class="ticker-track" id="ticker-track">
+                <div class="ticker-loading">Loading Market Data...</div>
+            </div>
+        </div>
 
         <div id="content-area">
 

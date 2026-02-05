@@ -21,6 +21,7 @@ let state = {
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     fetchHolders();
+    initTicker(); // ✅ NEW: Start the Stock Ticker
 
     // Auto-refresh loop
     setInterval(() => {
@@ -61,6 +62,42 @@ function initNavigation() {
             }
         });
     });
+}
+
+// --- Ticker Logic (NEW) ---
+async function initTicker() {
+    try {
+        const res = await fetch(`${API_BASE}/stocks`);
+        const stocks = await res.json();
+
+        const track = document.getElementById('ticker-track');
+        if (!track) return; // Guard clause
+
+        track.innerHTML = ''; // Clear loading message
+
+        // Duplicate list for smooth infinite scroll
+        const tickerData = [...stocks, ...stocks];
+
+        tickerData.forEach(s => {
+            const change = s.currentPrice - s.basePrice;
+            const pct = (change / s.basePrice) * 100;
+            const isUp = change >= 0;
+
+            const html = `
+                <div class="ticker-item">
+                    <span class="ticker-symbol">${s.symbol}</span>
+                    <span class="ticker-price">${formatCurrency(s.currentPrice)}</span>
+                    <span class="ticker-change ${isUp ? 'ticker-up' : 'ticker-down'}">
+                        ${isUp ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%
+                    </span>
+                </div>
+            `;
+            track.innerHTML += html;
+        });
+
+    } catch (e) {
+        console.error("Ticker Error:", e);
+    }
 }
 
 // --- API Calls ---

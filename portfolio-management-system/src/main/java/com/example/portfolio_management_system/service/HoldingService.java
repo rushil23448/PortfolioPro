@@ -19,13 +19,12 @@ public class HoldingService {
     private final HolderRepository holderRepository;
     private final StockRepository stockRepository;
 
-    // ✅ Changed stockId (Long) to stockSymbol (String)
     public Holding addHolding(Long holderId, String stockSymbol, Integer quantity, Double price) {
 
         Holder holder = holderRepository.findById(holderId)
                 .orElseThrow(() -> new RuntimeException("Holder not found with ID: " + holderId));
 
-        // ✅ findById now correctly expects a String
+        // ✅ Uses the String symbol to find the stock
         Stock stock = stockRepository.findById(stockSymbol)
                 .orElseThrow(() -> new RuntimeException("Stock not found with Symbol: " + stockSymbol));
 

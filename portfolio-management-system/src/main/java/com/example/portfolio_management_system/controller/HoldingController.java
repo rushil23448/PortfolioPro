@@ -16,10 +16,11 @@ public class HoldingController {
 
     private final HoldingService holdingService;
 
+    // ✅ Helper DTO matches the JSON sent from app.js
     @Data
     public static class AddHoldingRequest {
         private Long holderId;
-        private String stockSymbol; // ✅ Changed from Long stockId to String stockSymbol
+        private String stockSymbol; // ✅ String (e.g., "AAPL")
         private Integer quantity;
         private Double price;
     }
@@ -28,7 +29,7 @@ public class HoldingController {
     public Holding addHolding(@RequestBody AddHoldingRequest request) {
         return holdingService.addHolding(
                 request.getHolderId(),
-                request.getStockSymbol(), // ✅ Pass String
+                request.getStockSymbol(),
                 request.getQuantity(),
                 request.getPrice()
         );
