@@ -9,6 +9,7 @@ import com.example.portfolio_management_system.repository.HoldingRepository;
 import com.example.portfolio_management_system.repository.StockRepository;
 import com.example.portfolio_management_system.service.DiversificationService;
 import com.example.portfolio_management_system.service.PortfolioAnalyticsService;
+import com.example.portfolio_management_system.service.DumbMoneyService;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -23,18 +24,20 @@ public class PortfolioController {
     private final HoldingRepository holdingRepository;
     private final StockRepository stockRepository;
     private final DiversificationService diversificationService;
+    private final DumbMoneyService dumbMoneyService;
 
     private final PortfolioAnalyticsService analyticsService;
 
     public PortfolioController(HolderRepository holderRepository,
                                HoldingRepository holdingRepository,
-                               StockRepository stockRepository, DiversificationService diversificationService,
+                               StockRepository stockRepository, DiversificationService diversificationService, DumbMoneyService dumbMoneyService,
                                PortfolioAnalyticsService analyticsService) {
 
         this.holderRepository = holderRepository;
         this.holdingRepository = holdingRepository;
         this.stockRepository = stockRepository;
         this.diversificationService = diversificationService;
+        this.dumbMoneyService = dumbMoneyService;
         this.analyticsService = analyticsService;
     }
 
@@ -59,4 +62,10 @@ public class PortfolioController {
     public List<DiversificationRecommendation> diversification(@PathVariable Long holderId) {
         return diversificationService.analyzeDiversification(holderId);
     }
+    // ✅ API 5: Dumb Money Heatmap
+    @GetMapping("/dumb-money/heatmap")
+    public List<?> dumbMoneyHeatmap() {
+        return dumbMoneyService.generateHeatmap();
+    }
+
 }
