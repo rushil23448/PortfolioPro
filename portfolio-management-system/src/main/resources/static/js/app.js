@@ -179,7 +179,7 @@ function updateDashboard() {
 
     renderTable();
     drawPieChart();
-    drawLineChart();
+    drawLineChart(); // This now calls the updated function with scales
     drawBarChart();
     drawGaugeChart();
     renderDiversification();
@@ -410,7 +410,7 @@ async function addTransaction() {
     }
 }
 
-// --- Canvas Charting Helpers (No Libraries) ---
+// --- Canvas Charting Helpers (Updated with Scales) ---
 
 function drawPieChart() {
     const canvas = document.getElementById('pieChart');
@@ -455,35 +455,92 @@ function drawPieChart() {
     }
 }
 
+// ✅ REPLACED with Advanced Chart (Axes + Grid + Gradient)
 function drawLineChart() {
     const canvas = document.getElementById('lineChart');
     if (!canvas || state.history.length < 2) return;
     const ctx = canvas.getContext('2d');
 
+    // 1. Setup Dimensions & Margins
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = 300;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const padding = 40;
-    const chartW = canvas.width - padding * 2;
-    const chartH = canvas.height - padding * 2;
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const chartW = canvas.width - margin.left - margin.right;
+    const chartH = canvas.height - margin.top - margin.bottom;
 
+    // 2. Calculate Min/Max with buffer
     const values = state.history.map(d => d.value);
-    const minVal = Math.min(...values) * 0.95;
-    const maxVal = Math.max(...values) * 1.05;
+    let minVal = Math.min(...values);
+    let maxVal = Math.max(...values);
 
+    // Add 5% buffer so line doesn't touch edges
+    let range = maxVal - minVal;
+    if (range === 0) range = 100;
+    minVal -= range * 0.05;
+    maxVal += range * 0.05;
+    range = maxVal - minVal;
+
+    // Helpers
+    const getX = (i) => margin.left + (i / (state.history.length - 1)) * chartW;
+    const getY = (val) => margin.top + chartH - ((val - minVal) / range) * chartH;
+
+    // 3. Draw Grid & Y-Axis Labels
+    ctx.font = '11px Inter';
+    ctx.fillStyle = '#64748b';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+
+    const ySteps = 5;
+    for (let i = 0; i <= ySteps; i++) {
+        const val = minVal + (range * (i / ySteps));
+        const y = getY(val);
+
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(margin.left + chartW, y);
+        ctx.stroke();
+
+        ctx.textAlign = 'right';
+        ctx.fillText(formatCurrencyShort(val), margin.left - 10, y + 4);
+    }
+
+    // 4. Draw X-Axis Labels (Time)
+    const xLabelCount = 6;
+    const stepSize = Math.max(1, Math.floor((state.history.length - 1) / (xLabelCount - 1)));
+
+    for (let i = 0; i < state.history.length; i += stepSize) {
+        const pt = state.history[i];
+        const x = getX(i);
+        ctx.textAlign = 'center';
+        ctx.fillText(pt.time, x, margin.top + chartH + 20);
+    }
+
+    // 5. Draw Data Line
     ctx.beginPath();
     ctx.strokeStyle = '#2563eb';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
 
     state.history.forEach((point, index) => {
-        const x = padding + (index / (state.history.length - 1)) * chartW;
-        const y = padding + chartH - ((point.value - minVal) / (maxVal - minVal)) * chartH;
-
+        const x = getX(index);
+        const y = getY(point.value);
         if (index === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     });
     ctx.stroke();
+
+    // 6. Gradient Fill
+    const gradient = ctx.createLinearGradient(0, margin.top, 0, canvas.height);
+    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.15)');
+    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+    ctx.lineTo(getX(state.history.length - 1), margin.top + chartH);
+    ctx.lineTo(margin.left, margin.top + chartH);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
 }
 
 function drawBarChart() {
@@ -562,4 +619,12 @@ function drawGaugeChart() {
 function formatCurrency(num) {
     if (num === undefined || num === null) return '₹0.00';
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(num);
+}
+
+// ✅ NEW HELPER for Chart Labels
+function formatCurrencyShort(num) {
+    if (num >= 10000000) return '₹' + (num / 10000000).toFixed(2) + 'Cr';
+    if (num >= 100000) return '₹' + (num / 100000).toFixed(2) + 'L';
+    if (num >= 1000) return '₹' + (num / 1000).toFixed(1) + 'k';
+    return '₹' + Math.round(num).toLocaleString();
 }
