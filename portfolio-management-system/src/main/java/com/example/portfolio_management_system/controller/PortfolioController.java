@@ -42,10 +42,10 @@ public class PortfolioController {
     }
 
     // ✅ API 1: Get all holders
-    @GetMapping("/holders")
+   /* @GetMapping("/holders")
     public List<Holder> getAllHolders() {
         return holderRepository.findAll();
-    }
+    }*/
 
     // ✅ API 2: Get portfolio of one holder
     @GetMapping("/portfolio/{holderId}")

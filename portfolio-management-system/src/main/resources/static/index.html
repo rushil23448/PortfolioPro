@@ -35,6 +35,9 @@
             <li class="nav-item" data-tab="dumb-money">
                 <span class="icon">🤖</span> AI Signals
             </li>
+            <li class="nav-item" data-tab="manage">
+                <span class="icon">⚙️</span> Manage
+            </li>
         </ul>
 
         <div class="user-profile">
@@ -67,7 +70,6 @@
         <div id="content-area">
 
             <div id="view-dashboard" class="view-section active">
-
                 <div class="kpi-grid">
                     <div class="card kpi-card">
                         <div class="kpi-icon money">💰</div>
@@ -144,6 +146,36 @@
                 </div>
             </div>
 
+            <div id="view-portfolio" class="view-section">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Detailed Portfolio Holdings</h3>
+                        <div class="controls-right">
+                            <button class="icon-btn" onclick="renderPortfolio()">🔄 Refresh View</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="portfolio-table">
+                            <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Company Name</th>
+                                <th>Sector</th>
+                                <th>Quantity</th>
+                                <th>Avg Price</th>
+                                <th>Current Price</th>
+                                <th>Total Value</th>
+                                <th>Net P/L</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <div id="view-analytics" class="view-section">
                 <div class="charts-grid-2">
                     <div class="card chart-card">
@@ -172,6 +204,51 @@
                         <small>Client-side Heuristic Analysis</small>
                     </div>
                     <div id="ai-signals-grid" class="signals-grid">
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-manage" class="view-section">
+                <div class="charts-row">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Create New Investor</h3>
+                        </div>
+                        <div class="form-container" style="padding: 1rem;">
+                            <input type="text" id="new-holder-name" placeholder="Enter Investor Name" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                            <button class="icon-btn" onclick="createHolder()" style="width: 100%; background: var(--primary); color: white; justify-content: center;">+ Create Investor</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Add Transaction</h3>
+                        </div>
+                        <div class="form-container" style="padding: 1rem; display: flex; flex-direction: column; gap: 10px;">
+
+                            <label style="font-size:0.9rem; font-weight:600; color:var(--secondary)">Select Investor</label>
+                            <select id="manage-holder-select" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                <option disabled selected>Loading...</option>
+                            </select>
+
+                            <label style="font-size:0.9rem; font-weight:600; color:var(--secondary)">Select Stock</label>
+                            <select id="manage-stock-select" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                <option disabled selected>Loading Stocks...</option>
+                            </select>
+
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex:1">
+                                    <label style="font-size:0.8rem">Quantity</label>
+                                    <input type="number" id="trans-qty" placeholder="Qty" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                </div>
+                                <div style="flex:1">
+                                    <label style="font-size:0.8rem">Price (Avg)</label>
+                                    <input type="number" id="trans-price" placeholder="Price" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                </div>
+                            </div>
+
+                            <button class="icon-btn" onclick="addTransaction()" style="width: 100%; background: var(--success); color: white; margin-top: 10px; justify-content: center;">+ Buy Stock</button>
+                        </div>
                     </div>
                 </div>
             </div>

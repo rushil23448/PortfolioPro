@@ -21,7 +21,7 @@ let state = {
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     fetchHolders();
-    
+
     // Auto-refresh loop
     setInterval(() => {
         if (state.currentHolderId) {
@@ -50,8 +50,15 @@ function initNavigation() {
             const targetSection = document.getElementById(targetId);
             if (targetSection) targetSection.classList.add('active');
 
-            // Trigger specific renders if needed (like re-animating charts)
-            if (item.dataset.tab === 'dumb-money') renderAISignals(); 
+            // Trigger specific renders if needed
+            if (item.dataset.tab === 'dumb-money') renderAISignals();
+            if (item.dataset.tab === 'portfolio') renderPortfolio();
+
+            // ✅ Trigger stock loading for Manage Tab
+            if (item.dataset.tab === 'manage') {
+                fetchStocks();
+                syncManageDropdown();
+            }
         });
     });
 }
@@ -62,7 +69,7 @@ async function fetchHolders() {
     try {
         const res = await fetch(`${API_BASE}/holders`);
         state.holders = await res.json();
-        
+
         const select = document.getElementById('holder-select');
         select.innerHTML = '<option value="" disabled selected>Select Investor</option>';
         state.holders.forEach(h => {
@@ -110,7 +117,7 @@ async function refreshData() {
 
         // Update UI
         updateDashboard();
-        
+
     } catch (error) {
         console.error("Sync Error:", error);
     }
@@ -119,41 +126,35 @@ async function refreshData() {
 // --- DOM Updating ---
 
 function updateDashboard() {
-    // 1. KPI Cards
     const a = state.analytics;
     document.getElementById('kpi-invested').innerText = formatCurrency(a.totalInvested);
     document.getElementById('kpi-current').innerText = formatCurrency(a.currentValue);
-    
+
     const pnlEl = document.getElementById('kpi-pnl');
     pnlEl.innerText = formatCurrency(a.profitLoss);
     pnlEl.className = a.profitLoss >= 0 ? 'pnl-pos' : 'pnl-neg';
-    
+
     const pnlPct = (a.profitLoss / a.totalInvested) * 100;
     document.getElementById('kpi-pnl-percent').innerText = `${pnlPct.toFixed(2)}%`;
 
     document.getElementById('kpi-risk').innerText = `${a.riskScore}/100`;
     document.getElementById('kpi-risk-bar').style.width = `${a.riskScore}%`;
 
-    // 2. Table
     renderTable();
-
-    // 3. Charts
     drawPieChart();
     drawLineChart();
     drawBarChart();
     drawGaugeChart();
-
-    // 4. Diversification
     renderDiversification();
-
-    // 5. AI Signals
     renderAISignals();
+    renderPortfolio();
 }
 
 function renderTable() {
     const tbody = document.querySelector('#dashboard-table tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
-    
+
     state.holdings.forEach(h => {
         const s = h.stock;
         const pl = (s.currentPrice - h.avgPrice) * h.quantity;
@@ -172,10 +173,55 @@ function renderTable() {
     });
 }
 
+function renderPortfolio() {
+    const tbody = document.querySelector('#portfolio-table tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (!state.holdings || state.holdings.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No holdings found. Select an investor.</td></tr>';
+        return;
+    }
+
+    state.holdings.forEach(h => {
+        const s = h.stock;
+        const currentVal = s.currentPrice * h.quantity;
+        const investedVal = h.avgPrice * h.quantity;
+        const pl = currentVal - investedVal;
+        const plPercent = (pl / investedVal) * 100;
+
+        const plClass = pl >= 0 ? 'pnl-pos' : 'pnl-neg';
+        const plSign = pl >= 0 ? '+' : '';
+        const name = s.name || s.symbol;
+
+        const row = `
+            <tr>
+                <td><strong>${s.symbol}</strong></td>
+                <td>${name}</td>
+                <td><span class="tag-sector">${s.sector}</span></td>
+                <td>${h.quantity}</td>
+                <td>${formatCurrency(h.avgPrice)}</td>
+                <td>${formatCurrency(s.currentPrice)}</td>
+                <td><strong>${formatCurrency(currentVal)}</strong></td>
+                <td class="${plClass}">
+                    ${plSign}${formatCurrency(pl)} <br>
+                    <small>(${plSign}${plPercent.toFixed(2)}%)</small>
+                </td>
+                <td>
+                    <button class="icon-btn" style="font-size:0.8rem">👁️</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+}
+
 function renderDiversification() {
     const container = document.getElementById('diversification-container');
+    if (!container) return;
     container.innerHTML = '';
-    
+
     state.recommendations.forEach(rec => {
         const severityClass = `rec-${rec.severity.toLowerCase()}`;
         const html = `
@@ -190,18 +236,9 @@ function renderDiversification() {
     });
 }
 
-// --- Dumb Money AI Engine (Client Side Logic) ---
-/*
- * AI Logic Explanation:
- * We categorize stocks into 'Smart Money', 'Dumb Money', or 'Neutral' based on
- * a combination of Volatility and Confidence Score provided by the backend.
- * * Logic:
- * 1. Smart Money: Low Volatility (< 0.3) AND High Confidence (> 80). Indicates stable growth.
- * 2. Dumb Money (Risky): High Volatility (> 0.4) AND Low Confidence (< 60). Indicates retail hype bubble.
- * 3. Neutral: Anything in between.
- */
 function renderAISignals() {
     const container = document.getElementById('ai-signals-grid');
+    if (!container) return;
     container.innerHTML = '';
 
     state.holdings.forEach(h => {
@@ -211,7 +248,6 @@ function renderAISignals() {
         let reason = "Market Perform";
         let emoji = "😐";
 
-        // AI Decision Logic
         if (s.volatility < 0.3 && s.confidenceScore > 80) {
             signal = "SMART MONEY";
             typeClass = "smart";
@@ -241,6 +277,101 @@ function renderAISignals() {
     });
 }
 
+// --- Management Logic (Corrected) ---
+
+async function fetchStocks() {
+    try {
+        const res = await fetch(`${API_BASE}/stocks`);
+        const stocks = await res.json();
+        const select = document.getElementById('manage-stock-select');
+        select.innerHTML = '<option value="" disabled selected>Select Stock</option>';
+
+        stocks.forEach(s => {
+            const opt = document.createElement('option');
+            // ✅ CORRECTED: Use 's.symbol' (String) instead of 's.id'
+            opt.value = s.symbol;
+            opt.text = `${s.symbol} - ${s.name}`;
+            select.appendChild(opt);
+        });
+    } catch (e) {
+        console.error("Error loading stocks", e);
+    }
+}
+
+function syncManageDropdown() {
+    const mainSelect = document.getElementById('holder-select');
+    const manageSelect = document.getElementById('manage-holder-select');
+    if(mainSelect && manageSelect) {
+        manageSelect.innerHTML = mainSelect.innerHTML;
+        manageSelect.value = state.currentHolderId || "";
+    }
+}
+
+async function createHolder() {
+    const nameInput = document.getElementById('new-holder-name');
+    const name = nameInput.value.trim();
+    if (!name) return alert("Please enter a name");
+
+    try {
+        const res = await fetch(`${API_BASE}/holders`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name })
+        });
+
+        if (res.ok) {
+            alert("Investor created successfully!");
+            nameInput.value = "";
+            fetchHolders(); // Refresh global list
+        } else {
+            alert("Failed to create investor");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Error creating investor");
+    }
+}
+
+async function addTransaction() {
+    const holderId = document.getElementById('manage-holder-select').value;
+    const stockSymbol = document.getElementById('manage-stock-select').value;
+    const qty = document.getElementById('trans-qty').value;
+    const price = document.getElementById('trans-price').value;
+
+    if (!holderId || !stockSymbol || !qty || !price) {
+        return alert("Please fill all fields");
+    }
+
+    const payload = {
+        holderId: parseInt(holderId),
+        stockSymbol: stockSymbol, // ✅ CORRECTED: Sending symbol as string
+        quantity: parseInt(qty),
+        price: parseFloat(price)
+    };
+
+    try {
+        const res = await fetch(`${API_BASE}/holdings/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("Transaction Added!");
+            // Refresh logic if we modified current user
+            if (state.currentHolderId == holderId) {
+                refreshData();
+            }
+        } else {
+            const err = await res.text();
+            console.error("Failed:", err);
+            alert("Failed to add transaction. Check console.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Error adding transaction");
+    }
+}
 
 // --- Canvas Charting Helpers (No Libraries) ---
 
@@ -249,8 +380,8 @@ function drawPieChart() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const allocation = state.analytics.sectorAllocation;
-    
-    // Reset canvas
+    if (!allocation) return;
+
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = 300;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -266,22 +397,22 @@ function drawPieChart() {
 
     for (const [sector, value] of Object.entries(allocation)) {
         const sliceAngle = (value / total) * 2 * Math.PI;
-        
+
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
         ctx.fillStyle = colors[i % colors.length];
         ctx.fill();
-        
+
         // Legend text
         const midAngle = startAngle + sliceAngle / 2;
         const textX = centerX + (radius + 20) * Math.cos(midAngle);
         const textY = centerY + (radius + 20) * Math.sin(midAngle);
-        
+
         ctx.fillStyle = '#333';
         ctx.font = '10px Inter';
         ctx.fillText(sector, textX - 10, textY);
-        
+
         startAngle += sliceAngle;
         i++;
     }
@@ -291,7 +422,7 @@ function drawLineChart() {
     const canvas = document.getElementById('lineChart');
     if (!canvas || state.history.length < 2) return;
     const ctx = canvas.getContext('2d');
-    
+
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = 300;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -300,7 +431,6 @@ function drawLineChart() {
     const chartW = canvas.width - padding * 2;
     const chartH = canvas.height - padding * 2;
 
-    // Find min/max for scaling
     const values = state.history.map(d => d.value);
     const minVal = Math.min(...values) * 0.95;
     const maxVal = Math.max(...values) * 1.05;
@@ -312,7 +442,7 @@ function drawLineChart() {
     state.history.forEach((point, index) => {
         const x = padding + (index / (state.history.length - 1)) * chartW;
         const y = padding + chartH - ((point.value - minVal) / (maxVal - minVal)) * chartH;
-        
+
         if (index === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     });
@@ -320,7 +450,6 @@ function drawLineChart() {
 }
 
 function drawBarChart() {
-    // Canvas logic for confidence distribution (Bar Chart)
     const canvas = document.getElementById('barChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -328,14 +457,15 @@ function drawBarChart() {
     canvas.height = 250;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Bin the data
     const bins = { '0-50': 0, '51-75': 0, '76-100': 0 };
-    state.holdings.forEach(h => {
-        const c = h.stock.confidenceScore;
-        if (c <= 50) bins['0-50']++;
-        else if (c <= 75) bins['51-75']++;
-        else bins['76-100']++;
-    });
+    if (state.holdings) {
+        state.holdings.forEach(h => {
+            const c = h.stock.confidenceScore;
+            if (c <= 50) bins['0-50']++;
+            else if (c <= 75) bins['51-75']++;
+            else bins['76-100']++;
+        });
+    }
 
     const keys = Object.keys(bins);
     const barWidth = 60;
@@ -344,7 +474,7 @@ function drawBarChart() {
 
     keys.forEach((key, i) => {
         const val = bins[key];
-        const h = val * 20; // Scale factor
+        const h = val * 20;
         const x = startX + i * (barWidth + gap);
         const y = canvas.height - h - 30;
 
@@ -363,7 +493,7 @@ function drawGaugeChart() {
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.parentElement.offsetWidth;
     canvas.height = 250;
-    
+
     const x = canvas.width / 2;
     const y = canvas.height - 50;
     const r = 80;
