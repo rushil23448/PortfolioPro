@@ -23,4 +23,14 @@ class DumbMoneyStockTest {
         assertEquals("DUMB MONEY", s.getLabel());
     }
 
+    @Test
+    void getter_returnsExpectedValues() {
+        DumbMoneyStock s = new DumbMoneyStock("MSFT", "Technology", 0.12, 90, "SMART MONEY");
+
+        assertEquals("MSFT", s.getSymbol());
+        assertEquals("Technology", s.getSector());
+        assertEquals(0.12, s.getVolatility());
+        assertEquals(90, s.getConfidenceScore());
+        assertEquals("SMART MONEY", s.getLabel());
+    }
 }
