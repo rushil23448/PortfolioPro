@@ -31,6 +31,6 @@ class DumbMoneyStockTest {
         assertEquals("Technology", s.getSector());
         assertEquals(0.12, s.getVolatility());
         assertEquals(90, s.getConfidenceScore());
-        assertEquals("SMART MONEY", s.getLabel());
+        assertEquals("SMART_MONEY", s.getLabel());
     }
 }
