@@ -3,124 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinTech Portfolio Dashboard</title>
-
+    <title>PortfolioPro | AI-Driven Intelligence</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<div class="dashboard">
+<div class="app-container">
+    <nav class="sidebar">
+        <div class="brand">
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                    <polyline points="16 7 22 7 22 13"></polyline>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h2>PortfolioPro</h2>
+                <span>AI Intelligence</span>
+            </div>
+        </div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2>📊 PortfolioPro</h2>
-        <ul>
-            <li class="active">Dashboard</li>
-            <li>Add Holder</li>
-            <li>Add Holding</li>
-            <li>Analytics</li>
-            <li>Recommendation</li>
+        <ul class="nav-links">
+            <li class="nav-item active" data-tab="dashboard">
+                <span class="icon">📊</span> Dashboard
+            </li>
+            <li class="nav-item" data-tab="portfolio">
+                <span class="icon">💼</span> Portfolio
+            </li>
+            <li class="nav-item" data-tab="analytics">
+                <span class="icon">📈</span> Analytics
+            </li>
+            <li class="nav-item" data-tab="diversification">
+                <span class="icon">🛡️</span> Diversification
+            </li>
+            <li class="nav-item" data-tab="dumb-money">
+                <span class="icon">🤖</span> AI Signals
+            </li>
+            <li class="nav-item" data-tab="manage">
+                <span class="icon">⚙️</span> Manage
+            </li>
         </ul>
-    </aside>
 
-    <!-- Main Content -->
-    <main class="main">
+        <div class="user-profile">
+            <div class="avatar">👨‍💻</div>
+            <div class="user-info">
+                <span class="name">Admin User</span>
+                <span class="role">Senior Analyst</span>
+            </div>
+        </div>
+    </nav>
 
-        <!-- Header -->
-        <header class="topbar">
-            <h1>Portfolio Management System</h1>
-            <p>Multi-Holder Portfolio Dashboard</p>
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="breadcrumb">
+                <h1 id="page-title">Market Dashboard</h1>
+                <span class="live-indicator"><span class="blink">●</span> Live Market Data</span>
+            </div>
+
+            <div class="controls">
+                <div class="holder-selector">
+                    <label for="holder-select">Select Investor:</label>
+                    <select id="holder-select">
+                        <option value="" disabled selected>Loading Holders...</option>
+                    </select>
+                </div>
+                <button id="refresh-btn" class="icon-btn" title="Force Refresh">🔄</button>
+            </div>
         </header>
 
-        <!-- Holder Dropdown -->
-        <section class="holder-select">
-            <label>Select Holder:</label>
-            <select id="holderSelect"></select>
-        </section>
+        <div class="stock-ticker">
+            <div class="ticker-track" id="ticker-track">
+                <div class="ticker-loading">Loading Market Data...</div>
+            </div>
+        </div>
 
-        <!-- Summary Cards -->
-        <section class="cards">
-            <div class="card">
-                <h3>Total Invested</h3>
-                <p id="investedValue">₹0</p>
+        <div id="content-area">
+
+            <div id="view-dashboard" class="view-section active">
+                <div class="kpi-grid">
+                    <div class="card kpi-card">
+                        <div class="kpi-icon money">💰</div>
+                        <div class="kpi-data">
+                            <h3>Total Invested</h3>
+                            <p id="kpi-invested">₹0.00</p>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-icon chart">📈</div>
+                        <div class="kpi-data">
+                            <h3>Current Value</h3>
+                            <p id="kpi-current">₹0.00</p>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-icon pnl">⚖️</div>
+                        <div class="kpi-data">
+                            <h3>Total P/L</h3>
+                            <p id="kpi-pnl">₹0.00</p>
+                            <small id="kpi-pnl-percent">0.00%</small>
+                        </div>
+                    </div>
+                    <div class="card kpi-card">
+                        <div class="kpi-icon risk">⚠️</div>
+                        <div class="kpi-data">
+                            <h3>Risk Score</h3>
+                            <p id="kpi-risk">0/100</p>
+                            <div class="mini-bar"><div id="kpi-risk-bar" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
+                    <div class="card chart-card wide">
+                        <div class="card-header">
+                            <h3>Portfolio Value (Live Feed)</h3>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3>Sector Allocation</h3>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Live Holdings</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="dashboard-table">
+                            <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Sector</th>
+                                <th>Qty</th>
+                                <th>Avg Buy</th>
+                                <th>Market Price</th>
+                                <th>P/L</th>
+                                <th>Volatility</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Current Value</h3>
-                <p id="currentValue">₹0</p>
+            <div id="view-portfolio" class="view-section">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Detailed Portfolio Holdings</h3>
+                        <div class="controls-right">
+                            <button class="icon-btn" onclick="renderPortfolio()">🔄 Refresh View</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="portfolio-table">
+                            <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Company Name</th>
+                                <th>Sector</th>
+                                <th>Quantity</th>
+                                <th>Avg Price</th>
+                                <th>Current Price</th>
+                                <th>Total Value</th>
+                                <th>Net P/L</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="card" id="profitCard">
-                <h3>Profit / Loss</h3>
-                <p id="profitLoss">₹0</p>
-            </div>
-        </section>
-
-        <!-- Forms -->
-        <section class="forms">
-
-            <!-- Add Holder -->
-            <div class="form-box">
-                <h2>➕ Add Holder</h2>
-                <input type="text" id="holderName" placeholder="Holder Name">
-                <input type="email" id="holderEmail" placeholder="Holder Email">
-                <button onclick="addHolder()">Add Holder</button>
+            <div id="view-analytics" class="view-section">
+                <div class="charts-grid-2">
+                    <div class="card chart-card">
+                        <div class="card-header"><h3>Confidence Distribution</h3></div>
+                        <canvas id="barChart"></canvas>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header"><h3>Risk Gauge</h3></div>
+                        <canvas id="gaugeChart"></canvas>
+                    </div>
+                </div>
             </div>
 
-            <!-- Add Holding -->
-            <div class="form-box">
-                <h2>➕ Add Holding</h2>
-                <input type="text" id="stockSymbol" placeholder="Stock Symbol (TCS)">
-                <input type="number" id="quantity" placeholder="Quantity">
-                <input type="number" id="avgPrice" placeholder="Avg Buy Price">
-                <button onclick="addHolding()">Add Holding</button>
+            <div id="view-diversification" class="view-section">
+                <div class="card">
+                    <div class="card-header"><h3>Sector Exposure Analysis</h3></div>
+                    <div id="diversification-container" class="recommendation-list">
+                    </div>
+                </div>
             </div>
 
-        </section>
+            <div id="view-dumb-money" class="view-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🤖 Dumb Money AI Signals</h3>
+                        <small>Client-side Heuristic Analysis</small>
+                    </div>
+                    <div id="ai-signals-grid" class="signals-grid">
+                    </div>
+                </div>
+            </div>
 
-        <!-- Holdings Table -->
-        <section class="table-section">
-            <h2>📌 Holdings</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Stock</th>
-                    <th>Qty</th>
-                    <th>Avg Price</th>
-                </tr>
-                </thead>
-                <tbody id="holdingsTable"></tbody>
-            </table>
-        </section>
+            <div id="view-manage" class="view-section">
+                <div class="charts-row">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Create New Investor</h3>
+                        </div>
+                        <div class="form-container" style="padding: 1rem;">
+                            <input type="text" id="new-holder-name" placeholder="Enter Investor Name" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                            <button class="icon-btn" onclick="createHolder()" style="width: 100%; background: var(--primary); color: white; justify-content: center;">+ Create Investor</button>
+                        </div>
+                    </div>
 
-        <!-- Diversification -->
-        <section class="chart-section">
-            <h2>📈 Diversification Chart</h2>
-            <canvas id="pieChart"></canvas>
-        </section>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Add Transaction</h3>
+                        </div>
+                        <div class="form-container" style="padding: 1rem; display: flex; flex-direction: column; gap: 10px;">
 
-        <!-- Recommendations -->
-        <section class="table-section">
-            <h2>🤖 Top 5 Stock Recommendations</h2>
+                            <label style="font-size:0.9rem; font-weight:600; color:var(--secondary)">Select Investor</label>
+                            <select id="manage-holder-select" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                <option disabled selected>Loading...</option>
+                            </select>
 
-            <table>
-                <thead>
-                <tr>
-                    <th>Symbol</th>
-                    <th>Name</th>
-                    <th>Sector</th>
-                    <th>Base Price</th>
-                    <th>Volatility</th>
-                    <th>Confidence</th>
-                </tr>
-                </thead>
-                <tbody id="recommendationTable"></tbody>
-            </table>
-        </section>
+                            <label style="font-size:0.9rem; font-weight:600; color:var(--secondary)">Select Stock</label>
+                            <select id="manage-stock-select" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                <option disabled selected>Loading Stocks...</option>
+                            </select>
 
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex:1">
+                                    <label style="font-size:0.8rem">Quantity</label>
+                                    <input type="number" id="trans-qty" placeholder="Qty" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                </div>
+                                <div style="flex:1">
+                                    <label style="font-size:0.8rem">Price (Avg)</label>
+                                    <input type="number" id="trans-price" placeholder="Price" step="0.01" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                </div>
+                            </div>
 
+                            <button class="icon-btn" onclick="addTransaction()" style="width: 100%; background: var(--success); color: white; margin-top: 10px; justify-content: center;">+ Buy Stock</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </main>
 </div>
 

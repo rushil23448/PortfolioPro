@@ -25,4 +25,7 @@ public class HolderService {
         return holderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Holder not found"));
     }
+    public Holder saveHolder(Holder holder) {
+        return holderRepository.save(holder);
+    }
 }
