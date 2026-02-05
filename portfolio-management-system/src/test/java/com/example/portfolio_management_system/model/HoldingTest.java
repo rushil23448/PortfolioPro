@@ -8,7 +8,7 @@ class HoldingTest {
 
     @Test
     void builder_populatesRelations() {
-        Stock stockr = Stock.builder()
+        Stock stock = Stock.builder()
                 .symbol("TSLA")
                 .name("Tesla")
                 .sector("Automotive")
